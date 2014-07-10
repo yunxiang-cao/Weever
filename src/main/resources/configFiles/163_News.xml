@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+  <NewsConfigBean>
+    <commentNumNodeXpath>//span[@class='displayCount']</commentNumNodeXpath>
+    <commentPageUrlNodeXpath>//*[@id="js-epContent"]/div[1]/div[1]/div[1]/div/div[1]/a[2]</commentPageUrlNodeXpath>
+    <domainName>news.163.com</domainName>
+    <fileName>163_News</fileName>
+    <homePageUrls>http://news.163.com</homePageUrls>
+    <participatationNumNodeXpath>//span[@class='joinCount']</participatationNumNodeXpath>
+    <postTimeXpath/>
+    <commentPageUrl>http://comment.news.163.com/#boardId#/#threadId#.html</commentPageUrl>
+    <dataSrc>http://comment.news.163.com/cache/newlist/#boardId#/#threadId#_#page#.html</dataSrc>
+    <numPerPage>30</numPerPage>
+    <listName>newPosts</listName>
+    <attribute>time,t-ip,ip-content,b</attribute>
+    <charSet>UTF-8</charSet>
+  </NewsConfigBean>
