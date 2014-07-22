@@ -30,6 +30,16 @@ import com.yumidea.weever.comments.utils.DomainNameUtil;
 public class CommentParser {
 
 	private static Logger log = Logger.getLogger(CommentParser.class);
+	
+	private static String DOMAIN_NAME = "163";
+	
+	private static String GB2312 = "gb2312";
+	
+	private static String AREA_NAME = "网友";
+	
+	private static String BOARD_ID_TMP = "#boardId#";
+	
+	private static String THREAD_ID_TMP = "#threadId#";
 
 	private boolean timeSet = false;
 
@@ -60,14 +70,14 @@ public class CommentParser {
 	}
 
 	/**
-	 * get web page content from data source
+	 * get web page content from data source顔�
 	 * 
 	 * @param url
 	 * @param charSet
 	 * @return
 	 * @throws IOException
 	 */
-	public static String read(String url, String charSet) throws IOException {
+	private String read(String url, String charSet) throws IOException {
 		StringBuffer html = new StringBuffer();
 
 		URL addrUrl = null;
@@ -119,7 +129,6 @@ public class CommentParser {
 
 		try {
 			comment = read(commentDataurl, charSet);
-
 			if (null == comment || "".equals(comment)) {
 				log.info("comment : " + comment);
 			}
@@ -136,8 +145,8 @@ public class CommentParser {
 
 		String fileName = "";
 
-		if (domainName.contains("163")) {
-			fileName = "163";
+		if (domainName.contains(DOMAIN_NAME)) {
+			fileName = DOMAIN_NAME;
 			JSONObject jsonObject = JSONObject.fromObject(comment);
 
 			try {
@@ -157,7 +166,7 @@ public class CommentParser {
 			JSONObject obj = JSONObject.fromObject(array.get(i).toString());
 			if (null == obj)
 				break;
-			if (domainName.contains("163")) {
+			if (domainName.contains(DOMAIN_NAME)) {
 				// get floors of this comment
 				int j = obj.size();
 				if (j > 1)
@@ -180,13 +189,13 @@ public class CommentParser {
 				if (null == obj2.get("f"))
 					continue;
 				String area = obj2.get("f").toString();
-				if (area.contains("网友"))
-					area = area.substring(0, area.indexOf("网友") + 2);
+				if (area.contains(AREA_NAME))
+					area = area.substring(0, area.indexOf(AREA_NAME) + 2);
 				if (null == obj2.get("n"))
 					continue;
 				String nickName = obj2.get("n").toString();
-				if (area.contains("网友"))
-					area = area.substring(0, area.indexOf("网友"));
+				if (area.contains(AREA_NAME))
+					area = area.substring(0, area.indexOf(AREA_NAME));
 
 				try {
 					FileWriter output = new FileWriter(f, true);
@@ -273,7 +282,7 @@ public class CommentParser {
 
 		log.info(" numPfPage : " + Math.ceil(commentNum / (double) numPerPage));
 
-		String fileName = "163";
+		String fileName = DOMAIN_NAME;
 		File f = new File("C:\\" + fileName + ".csv");
 		FileWriter output;
 		try {
@@ -309,7 +318,7 @@ public class CommentParser {
 		log.info("commentPageUrl: " + commentPageUrl);
 
 		String domainName = DomainNameUtil.extractDomainName(commentPageUrl);
-		if (domainName.contains("163")) {
+		if (domainName.contains(DOMAIN_NAME)) {
 			String newsInfoUrl = commentPageUrl.substring(
 					commentPageUrl.indexOf(domainName) + domainName.length()
 							+ 1, commentPageUrl.lastIndexOf("."));
@@ -318,8 +327,8 @@ public class CommentParser {
 			String[] infos = newsInfoUrl.split("/");
 			boardId = infos[0];
 			threadId = infos[1];
-			dataSrc = dataSrc.replace("#boardId#", boardId);
-			dataSrc = dataSrc.replace("#threadId#", threadId);
+			dataSrc = dataSrc.replace(BOARD_ID_TMP, boardId);
+			dataSrc = dataSrc.replace(THREAD_ID_TMP, threadId);
 		}
 
 		log.info("data source link: " + dataSrc);
@@ -331,7 +340,7 @@ public class CommentParser {
 		datasrc = datasrc.replace("#page#", "000");
 		String commentNum = "";
 		try {
-			String newPostList = read(datasrc, "gb2312");
+			String newPostList = read(datasrc, GB2312);
 			Pattern pattern = Pattern.compile("\"tcount\":\\w+");
 			Matcher matcher = pattern.matcher(newPostList);
 
@@ -341,7 +350,7 @@ public class CommentParser {
 				if (begin != -1)
 					commentNum = commentNumEquation.substring(begin + 1);
 
-				System.out.println("commentNum = : " + commentNum);
+				log.info("commentNum = : " + commentNum);
 			}
 
 		} catch (IOException e) {
@@ -353,7 +362,7 @@ public class CommentParser {
 	private String getCommentPageUrl(String contentPageUrl,
 			String commentPageUrl) {
 		try {
-			String htmlContent = read(contentPageUrl, "gb2312");
+			String htmlContent = read(contentPageUrl, GB2312);
 
 			Pattern pattern = Pattern.compile("boardId = \"\\w+\",");
 			Matcher matcher = pattern.matcher(htmlContent);
@@ -371,11 +380,11 @@ public class CommentParser {
 				int end = boardIdEquation.lastIndexOf("\"");
 				if (begin != -1 && end != -1)
 					boardId = boardIdEquation.substring(begin + 1, end);
-				System.out.println("boardId = : " + boardId);
+				log.info("boardId = : " + boardId);
 			}
 
-			commentPageUrl = commentPageUrl.replace("#boardId#", boardId);
-			commentPageUrl = commentPageUrl.replace("#threadId#", threadId);
+			commentPageUrl = commentPageUrl.replace(BOARD_ID_TMP, boardId);
+			commentPageUrl = commentPageUrl.replace(THREAD_ID_TMP, threadId);
 
 			File dest = new File("C:/new.txt");
 			try {
